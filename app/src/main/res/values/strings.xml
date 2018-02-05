@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Heady Assessment</string>
+    <string name="title_products">Products</string>
+    <string name="title_rankings">Rankings</string>
+</resources>
