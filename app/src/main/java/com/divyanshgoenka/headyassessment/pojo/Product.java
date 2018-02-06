@@ -111,6 +111,8 @@ public class Product implements Listable,Serializable {
     }
 
 
+
+
     public static class Builder {
 
         private String mDateAdded;

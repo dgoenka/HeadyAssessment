@@ -5,6 +5,7 @@ import android.view.View;
 import com.divyanshgoenka.headyassessment.pojo.CategoryList;
 import com.divyanshgoenka.headyassessment.pojo.Listable;
 import com.divyanshgoenka.headyassessment.pojo.Product;
+import com.divyanshgoenka.headyassessment.pojo.Ranking;
 import com.divyanshgoenka.headyassessment.presenter.MainPresenter;
 
 /**
@@ -19,7 +20,7 @@ public class CategoriesViewHolder extends BaseViewHolder {
     }
 
     @Override
-    public void bindView(Listable categoryList) {
+    public void bindView(Listable categoryList, String ranking) {
         mItem = (CategoryList) categoryList;
         //itemView.setOnClickListener(v-> mainPresenter.onProductClicked(mItem));
     }

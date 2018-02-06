@@ -7,11 +7,14 @@ import com.divyanshgoenka.headyassessment.pojo.Ranking;
 import com.divyanshgoenka.headyassessment.repository.CategoryProductRepository;
 import com.divyanshgoenka.headyassessment.rx.SchedulersFacade;
 import com.divyanshgoenka.headyassessment.view.MainView;
+import com.divyanshgoenka.headyassessment.view.RankingView;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -21,8 +24,9 @@ import io.reactivex.functions.Consumer;
 public class MainPresenter {
 
 
+
     MainView mainView;
-    RankingFragment rankingView;
+    RankingView rankingView;
     SchedulersFacade schedulersFacade;
     CategoryProductRepository categoryProductRepository;
 
@@ -42,17 +46,40 @@ public class MainPresenter {
         mainView.switchToRankings();
     }
 
+
+    public void setMainView(MainView mainView) {
+        this.mainView = mainView;
+    }
+
     public void setRankingView(RankingFragment rankingView) {
         this.rankingView = rankingView;
     }
 
     public void loadRankings() {
-        categoryProductRepository.getProductsByRank().subscribeOn(schedulersFacade.io()).observeOn(schedulersFacade.ui()).subscribe(new Consumer<List<Ranking>>() {
+        categoryProductRepository.getProductsByRank().subscribeOn(schedulersFacade.io()).observeOn(schedulersFacade.ui()).subscribe(new Observer<List<Ranking>>() {
             @Override
-            public void accept(List<Ranking> rankings) throws Exception {
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(List<Ranking> rankings) {
                 if(rankingView!=null)
                     rankingView.showProducts(rankings, categoryProductRepository.getListVersionAt());
             }
+
+            @Override
+            public void onError(Throwable e) {
+                if(rankingView!=null)
+                    rankingView.onLoadRankingException(e);
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+
+
         });
     }
 

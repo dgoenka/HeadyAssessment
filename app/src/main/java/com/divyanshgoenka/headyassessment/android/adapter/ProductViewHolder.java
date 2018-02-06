@@ -34,12 +34,20 @@ public class ProductViewHolder extends BaseViewHolder {
     }
 
     @Override
-    public void bindView(Listable product) {
+    public void bindView(Listable product, String ranking) {
         mItem = (Product) product;
+        if(product!=null){
         itemView.setOnClickListener(v-> mainPresenter.onProductClicked(mItem));
         //Glide.with(productImageView).load(mItem.picture).into(productImageView);
         productName.setText(mItem.getName());
-        productContent.setText(mItem.getViewCount().toString());
+        productContent.setText(getTextForRanking(mItem, ranking));
+        }
+    }
 
+    public String getTextForRanking(Product mItem, String ranking) {
+        ranking = ranking.toLowerCase();
+        if(ranking.contains("share")) return "Shares: "+mItem.getShares();
+        if(ranking.contains("order")) return "Orders: "+mItem.getOrderCount();
+        return "Views: "+mItem.getViewCount();
     }
 }

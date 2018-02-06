@@ -12,15 +12,19 @@ import com.divyanshgoenka.headyassessment.presenter.MainPresenter;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 
 public class ProductRankingRecyclerViewAdapter extends RecyclerView.Adapter<BaseViewHolder> {
 
     private final List<? extends Listable> mValues;
     private MainPresenter mainPresenter;
+    private String ranking;
 
-    public ProductRankingRecyclerViewAdapter(List<? extends Listable> items, MainPresenter mainPresenter) {
+    public ProductRankingRecyclerViewAdapter(List<? extends Listable> items, MainPresenter mainPresenter,@Nullable String ranking) {
         this.mValues = items;
         this.mainPresenter = mainPresenter;
+        this.ranking = ranking;
     }
 
 
@@ -45,7 +49,7 @@ public class ProductRankingRecyclerViewAdapter extends RecyclerView.Adapter<Base
     @Override
     public void onBindViewHolder(final BaseViewHolder holder, int position) {
 
-        holder.bindView(mValues.get(position));
+        holder.bindView(mValues.get(position), ranking);
 
     }
 

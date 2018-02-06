@@ -10,6 +10,12 @@ public class Ranking  implements Serializable {
 
     @SerializedName("products")
     private List<Product> mProducts;
+
+    @Override
+    public String toString() {
+        return mRanking;
+    }
+
     @SerializedName("ranking")
     private String mRanking;
 

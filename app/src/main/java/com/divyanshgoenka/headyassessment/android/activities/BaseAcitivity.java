@@ -22,5 +22,6 @@ public class BaseAcitivity extends AppCompatActivity{
         fragmentManager.beginTransaction().replace(R.id.fragment_container,fragment)
         .addToBackStack(BACK_STACK_ROOT_TAG).commit();
         invalidateOptionsMenu();
+        setTitle(R.string.app_name);
     }
 }

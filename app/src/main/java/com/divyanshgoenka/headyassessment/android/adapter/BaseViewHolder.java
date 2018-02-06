@@ -23,5 +23,5 @@ public abstract class BaseViewHolder extends RecyclerView.ViewHolder {
 
     }
 
-    public abstract void bindView(Listable listable);
+    public abstract void bindView(Listable listable, String ranking);
 }

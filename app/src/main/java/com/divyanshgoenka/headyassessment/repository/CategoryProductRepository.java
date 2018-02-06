@@ -35,7 +35,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class CategoryProductRepository {
     private HeadyService categoryProductApi;
     private CategoryRankingData lastFetchedDataInMemory;
-    private final List<Ranking> rankedProducts = new ArrayList<>();
     private final HashMap<Long,Product> productHashMap = new HashMap<>();
     @Inject
     public CategoryProductRepository(){
@@ -54,26 +53,23 @@ public class CategoryProductRepository {
 
     public Observable<List<Ranking>> getProductsByRank(){
 
-        if(rankedProducts==null|| lastFetchedDataInMemory == null || dataIsTooOld(lastFetchedDataInMemory.getFetchedAt())){
+        if(lastFetchedDataInMemory == null || dataIsTooOld(lastFetchedDataInMemory.getFetchedAt())){
             return createObservableToProcessCategoryProductInfo(createCategoryRankingDataObservable());
         }
 
-        return Observable.just(rankedProducts);
+        return Observable.just(lastFetchedDataInMemory.getRankings());
     }
 
     private Observable<CategoryRankingData> createCategoryRankingDataObservable(){
-        return categoryProductApi.getData().doOnNext(new Consumer<CategoryRankingData>() {
-            @Override
-            public void accept(CategoryRankingData categoryRankingData) throws Exception {
-                    categoryRankingData.setFetchedAt(System.currentTimeMillis());
-            }
-        });
+        return categoryProductApi.getData();
     }
 
     private Observable<List<Ranking>> createObservableToProcessCategoryProductInfo(Observable<CategoryRankingData> categoryRankingDataObservable) {
         return categoryRankingDataObservable.flatMap(new Function<CategoryRankingData, ObservableSource<List<Ranking>>>() {
             @Override
             public ObservableSource<List<Ranking>> apply(CategoryRankingData categoryRankingData) throws Exception {
+                categoryRankingData.setFetchedAt(System.currentTimeMillis());
+                lastFetchedDataInMemory = categoryRankingData;
                 return Observable.fromCallable(new Callable<List<Ranking>>() {
                     @Override
                     public List<Ranking> call() throws Exception {
@@ -85,7 +81,6 @@ public class CategoryProductRepository {
     }
 
     private List<Ranking> processAndReturnCategoryRankData(CategoryRankingData categoryRankingData) {
-        rankedProducts.clear();
         productHashMap.clear();
         if(!Validations.isEmptyOrNull(categoryRankingData.getRankings())){
             for(Category category:categoryRankingData.getCategories()){
@@ -103,13 +98,16 @@ public class CategoryProductRepository {
                         Product p2_full = productHashMap.get(p2.getId());
                         p1_full.setCountsSafely(p1);
                         p2_full.setCountsSafely(p2);
+                        p1.setName(p1_full.getName());
+                        p2.setName(p2_full.getName());
+                        //TODO - more fields / effective deep copy mechanism
 
                         return (int) (p2.getCountForRanking(ranking.getRanking())-p1.getCountForRanking(ranking.getRanking()));
                     }
                 });
             }
         }
-        return rankedProducts;
+        return categoryRankingData.getRankings();
     }
 
     private boolean dataIsTooOld(Long lastFatchTime) {

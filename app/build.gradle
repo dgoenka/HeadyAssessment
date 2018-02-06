@@ -88,8 +88,8 @@ dependencies {
     compile "com.squareup.okhttp3:okhttp:$project.okHttpVersion"
 
     //Glide
-    compile "com.github.bumptech.glide:glide:$project.glideVersion"
-    annotationProcessor "com.github.bumptech.glide:compiler:$project.glideVersion"
+    //compile "com.github.bumptech.glide:glide:$project.glideVersion"
+    //annotationProcessor "com.github.bumptech.glide:compiler:$project.glideVersion"
 
     //GSON
     compile "com.google.code.gson:gson:$project.gsonVersion"

@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import com.divyanshgoenka.headyassessment.android.adapter.ProductRankingRecyclerViewAdapter;
@@ -26,6 +27,7 @@ import com.divyanshgoenka.headyassessment.R;
 import com.divyanshgoenka.headyassessment.view.MainView;
 import com.divyanshgoenka.headyassessment.view.RankingView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 
@@ -37,7 +39,7 @@ import timber.log.Timber;
  * A fragment representing a ranking of products.
  * <p/>
  */
-public class RankingFragment extends Fragment implements RankingView, AdapterView.OnItemClickListener {
+public class RankingFragment extends Fragment implements RankingView, AdapterView.OnItemSelectedListener {
 
 
     private static final String SAVED_LAYOUT_MANAGER = "SAVED_LAYOUT_MANAGER";
@@ -55,6 +57,7 @@ public class RankingFragment extends Fragment implements RankingView, AdapterVie
     private Parcelable rankingSpinnerSavedState;
     private Long listVersionAt;
     private int selectedPosition =0;
+    private List<Ranking> rankings;
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
@@ -68,6 +71,8 @@ public class RankingFragment extends Fragment implements RankingView, AdapterVie
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        getActivity().setTitle(R.string.title_rankings);
     }
 
     @Override
@@ -95,7 +100,6 @@ public class RankingFragment extends Fragment implements RankingView, AdapterVie
         outState.putParcelable(SAVED_SPINNER_STATE, rankingSpinner.onSaveInstanceState());
         outState.putLong(LIST_VERSION_AT,listVersionAt);
         outState.putInt(SAVED_SPINNER_POSITION, rankingSpinner.getSelectedItemPosition());
-
     }
 
     @Override
@@ -103,7 +107,7 @@ public class RankingFragment extends Fragment implements RankingView, AdapterVie
         inflater.inflate(R.menu.rankings,menu);
         MenuItem menuItem = menu.findItem(R.id.ranking_spinner);
         rankingSpinner = (Spinner) menuItem.getActionView();
-        rankingSpinner.setOnItemClickListener(this);
+        rankingSpinner.setOnItemSelectedListener(this);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -128,9 +132,11 @@ public class RankingFragment extends Fragment implements RankingView, AdapterVie
 
     @Override
     public void showProducts(List<Ranking> rankings, Long listVersionAt) {
-        List<Product> productList = rankings.get(selectedPosition).getProducts();
-
-        recyclerView.setAdapter(new ProductRankingRecyclerViewAdapter(productList, mainPresenter));
+        this.rankings = rankings;
+        ArrayAdapter<Ranking> adapter = new ArrayAdapter<Ranking>(getContext(),android.R.layout.simple_spinner_item, rankings);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        changeAdapter(selectedPosition);
+        rankingSpinner.setAdapter(adapter);
         if(this.listVersionAt!=listVersionAt){
             this.listVersionAt = listVersionAt;
         }else{
@@ -141,13 +147,30 @@ public class RankingFragment extends Fragment implements RankingView, AdapterVie
         }
     }
 
+    public void changeAdapter(int selectedPosition){
+        this.selectedPosition = selectedPosition;
+        Ranking ranking = rankings.get(selectedPosition);
+        List<Product> productList = ranking.getProducts();
+        recyclerView.setAdapter(new ProductRankingRecyclerViewAdapter(productList, mainPresenter, ranking.getRanking()));
+    }
+
     @Override
     public void setLoading(boolean loading) {
 
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+    public void onLoadRankingException(Throwable e) {
+        Timber.e(e);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int selectedPosition, long l) {
+        changeAdapter(selectedPosition);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
 
     }
 }

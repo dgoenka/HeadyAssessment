@@ -12,4 +12,6 @@ import java.util.List;
 public interface RankingView {
     public void showProducts(List<Ranking> productIterable, Long listVersionAt);
     public void setLoading(boolean loading);
+
+    void onLoadRankingException(Throwable e);
 }
