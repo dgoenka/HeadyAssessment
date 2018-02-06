@@ -133,8 +133,8 @@ public class RankingFragment extends Fragment implements RankingView, AdapterVie
     @Override
     public void showProducts(List<Ranking> rankings, Long listVersionAt) {
         this.rankings = rankings;
-        ArrayAdapter<Ranking> adapter = new ArrayAdapter<Ranking>(getContext(),android.R.layout.simple_spinner_item, rankings);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<Ranking> adapter = new ArrayAdapter<Ranking>(getContext(),R.layout.simple_spinner_item, rankings);
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         changeAdapter(selectedPosition);
         rankingSpinner.setAdapter(adapter);
         if(this.listVersionAt!=listVersionAt){

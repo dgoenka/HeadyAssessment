@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/text1"
+    android:textSize="@dimen/ranking_spinner_select_item_text_size"
+    android:singleLine="true"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:paddingLeft="12.5dp"
+    android:paddingRight="12.5dp"
+    android:gravity="start|center_vertical"
+    android:textColor="#000"
+    android:background="#FFF"
+    android:ellipsize="marquee"/>

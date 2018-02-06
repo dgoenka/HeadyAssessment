@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+
 import com.divyanshgoenka.headyassessment.R;
 import com.divyanshgoenka.headyassessment.pojo.Listable;
 import com.divyanshgoenka.headyassessment.pojo.Product;
