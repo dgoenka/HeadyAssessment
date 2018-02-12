@@ -21,15 +21,12 @@ import io.reactivex.functions.Consumer;
  * Created by divyanshgoenka on 04/02/18.
  */
 
-public class MainPresenter {
-
-
+public class MainPresenter implements BasePresenter<MainView> {
 
     MainView mainView;
     RankingView rankingView;
     SchedulersFacade schedulersFacade;
     CategoryProductRepository categoryProductRepository;
-
 
     @Inject
     public MainPresenter(MainView mainView,CategoryProductRepository categoryProductRepository,SchedulersFacade schedulersFacade){
@@ -39,17 +36,15 @@ public class MainPresenter {
     }
 
     public void switchToProducts() {
+        if(mainView!=null)
         mainView.switchToProducts();
     }
 
     public void switchToRankings() {
+        if(mainView!=null)
         mainView.switchToRankings();
     }
 
-
-    public void setMainView(MainView mainView) {
-        this.mainView = mainView;
-    }
 
     public void setRankingView(RankingFragment rankingView) {
         this.rankingView = rankingView;
@@ -85,5 +80,10 @@ public class MainPresenter {
 
     public void onProductClicked(Product product) {
         //TODO Detail View of Product
+    }
+
+    @Override
+    public void set(MainView mainView) {
+        this.mainView = mainView;
     }
 }

@@ -5,13 +5,25 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.divyanshgoenka.headyassessment.R;
+import com.divyanshgoenka.headyassessment.presenter.BasePresenter;
+import com.divyanshgoenka.headyassessment.view.BaseView;
+
+import javax.inject.Inject;
 
 
 /**
+ * Base Activity class.
+ *
+ * Parameter P is the Presenter Class
+ * Parameter V is the View Class
+ *
  * Created by divyanshgoenka on 04/02/18.
  */
 
-public class BaseAcitivity extends AppCompatActivity{
+public abstract class BaseAcitivity<P extends BasePresenter> extends AppCompatActivity{
+
+    @Inject
+    P Presenter;
 
     private static final String BACK_STACK_ROOT_TAG = "root_fragment";
 
@@ -24,4 +36,20 @@ public class BaseAcitivity extends AppCompatActivity{
         invalidateOptionsMenu();
         setTitle(R.string.app_name);
     }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        setPresenter();
+    }
+
+    abstract void setPresenter();
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unsetPresenter();
+    }
+
+    protected abstract void unsetPresenter();
 }

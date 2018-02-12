@@ -55,6 +55,9 @@ dependencies {
     compile "com.android.support.constraint:constraint-layout:$project.constraintLayoutVersion"
     //RecyclerView
     compile "com.android.support:recyclerview-v7:$project.recyclerViewVersion"
+
+    compile 'com.rockerhieu:rv-adapter-states:1.0'
+
     //Design Library
     compile "com.android.support:design:$project.designLibraryVersion"
 
@@ -96,5 +99,7 @@ dependencies {
 
     // Timber
     compile "com.jakewharton.timber:timber:$project.timberVersion"
+
+
 
 }

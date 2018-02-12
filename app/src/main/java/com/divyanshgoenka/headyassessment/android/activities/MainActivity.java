@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import com.divyanshgoenka.headyassessment.presenter.MainPresenter;
 import com.divyanshgoenka.headyassessment.R;
 import com.divyanshgoenka.headyassessment.android.fragment.RankingFragment;
+import com.divyanshgoenka.headyassessment.view.BaseView;
 import com.divyanshgoenka.headyassessment.view.MainView;
 
 import javax.inject.Inject;
@@ -22,15 +23,13 @@ import butterknife.ButterKnife;
 import dagger.android.AndroidInjection;
 import dagger.android.support.AndroidSupportInjection;
 
-public class MainActivity extends BaseAcitivity implements MainView {
+public class MainActivity extends BaseAcitivity<MainPresenter> implements MainView {
 
     private static final int DEFAULT_BOTTOM_NAVIGATION_POSITION = R.id.navigation_rankings;
 
     @BindView(R.id.navigation)
     BottomNavigationView mBottomNavigationView;
 
-    @Inject
-    MainPresenter mainPresenter;
 
     @BindView(R.id.fragment_container)
     FrameLayout container;
@@ -48,7 +47,7 @@ public class MainActivity extends BaseAcitivity implements MainView {
 
     @Override
     public MainPresenter getPresenter() {
-        return mainPresenter;
+        return Presenter;
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener () {
@@ -57,10 +56,10 @@ public class MainActivity extends BaseAcitivity implements MainView {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_products:
-                    mainPresenter.switchToProducts();
+                    Presenter.switchToProducts();
                     return true;
                 case R.id.navigation_rankings:
-                    mainPresenter.switchToRankings();
+                    Presenter.switchToRankings();
                     return true;
 
             }
@@ -81,6 +80,7 @@ public class MainActivity extends BaseAcitivity implements MainView {
         }
     }
 
+
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState) {
         super.onRestoreInstanceState(savedInstanceState, persistentState);
@@ -88,4 +88,15 @@ public class MainActivity extends BaseAcitivity implements MainView {
 
 
 
+    @Override
+    void setPresenter() {
+        Presenter.set(this);
+    }
+
+
+
+    @Override
+    protected void unsetPresenter() {
+        Presenter.set(null);
+    }
 }
