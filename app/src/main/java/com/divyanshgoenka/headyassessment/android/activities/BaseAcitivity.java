@@ -1,5 +1,7 @@
 package com.divyanshgoenka.headyassessment.android.activities;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +11,8 @@ import com.divyanshgoenka.headyassessment.presenter.BasePresenter;
 import com.divyanshgoenka.headyassessment.view.BaseView;
 
 import javax.inject.Inject;
+
+import dagger.android.AndroidInjection;
 
 
 /**
@@ -38,16 +42,18 @@ public abstract class BaseAcitivity<P extends BasePresenter> extends AppCompatAc
     }
 
     @Override
-    protected void onResume(){
-        super.onResume();
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
+        super.onCreate(savedInstanceState);
         setPresenter();
     }
+
 
     abstract void setPresenter();
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
         unsetPresenter();
     }
 

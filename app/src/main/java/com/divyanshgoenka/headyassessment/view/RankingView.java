@@ -1,6 +1,5 @@
 package com.divyanshgoenka.headyassessment.view;
 
-import com.divyanshgoenka.headyassessment.pojo.Product;
 import com.divyanshgoenka.headyassessment.pojo.Ranking;
 
 import java.util.List;
@@ -14,4 +13,8 @@ public interface RankingView {
     public void setLoading(boolean loading);
 
     void onLoadRankingException(Throwable e);
+
+    void showLoading();
+
+    void hideLoading();
 }

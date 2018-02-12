@@ -1,7 +1,6 @@
 package com.divyanshgoenka.headyassessment.presenter;
 
 import com.divyanshgoenka.headyassessment.android.fragment.RankingFragment;
-import com.divyanshgoenka.headyassessment.android.rx.AndroidSchedulersFacade;
 import com.divyanshgoenka.headyassessment.pojo.Product;
 import com.divyanshgoenka.headyassessment.pojo.Ranking;
 import com.divyanshgoenka.headyassessment.repository.CategoryProductRepository;
@@ -15,7 +14,6 @@ import javax.inject.Inject;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 /**
  * Created by divyanshgoenka on 04/02/18.
@@ -29,20 +27,22 @@ public class MainPresenter implements BasePresenter<MainView> {
     CategoryProductRepository categoryProductRepository;
 
     @Inject
-    public MainPresenter(MainView mainView,CategoryProductRepository categoryProductRepository,SchedulersFacade schedulersFacade){
+    public MainPresenter(MainView mainView, CategoryProductRepository categoryProductRepository, SchedulersFacade schedulersFacade) {
         this.mainView = mainView;
         this.categoryProductRepository = categoryProductRepository;
         this.schedulersFacade = schedulersFacade;
     }
 
     public void switchToProducts() {
-        if(mainView!=null)
-        mainView.switchToProducts();
+        if (mainView != null) {
+            mainView.switchToProducts();
+        }
     }
 
     public void switchToRankings() {
-        if(mainView!=null)
-        mainView.switchToRankings();
+        if (mainView != null) {
+            mainView.switchToRankings();
+        }
     }
 
 
@@ -54,24 +54,30 @@ public class MainPresenter implements BasePresenter<MainView> {
         categoryProductRepository.getProductsByRank().subscribeOn(schedulersFacade.io()).observeOn(schedulersFacade.ui()).subscribe(new Observer<List<Ranking>>() {
             @Override
             public void onSubscribe(Disposable d) {
-
+                if (rankingView != null) {
+                    rankingView.showLoading();
+                }
             }
 
             @Override
             public void onNext(List<Ranking> rankings) {
-                if(rankingView!=null)
+                if (rankingView != null) {
                     rankingView.showProducts(rankings, categoryProductRepository.getListVersionAt());
+                }
             }
 
             @Override
             public void onError(Throwable e) {
-                if(rankingView!=null)
+                if (rankingView != null) {
                     rankingView.onLoadRankingException(e);
+                }
             }
 
             @Override
             public void onComplete() {
-
+                if (rankingView != null) {
+                    rankingView.hideLoading();
+                }
             }
 
 

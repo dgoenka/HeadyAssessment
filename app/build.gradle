@@ -4,6 +4,7 @@ project.ext {
 
     constraintLayoutVersion = "1.0.2"
     recyclerViewVersion = "27.0.2"
+    materialProgressBarVersion = "1.4.2"
     supportLibraryVersion = "27.0.2"
     designLibraryVersion = "27.0.2"
     daggerVersion = "2.11"
@@ -55,8 +56,8 @@ dependencies {
     compile "com.android.support.constraint:constraint-layout:$project.constraintLayoutVersion"
     //RecyclerView
     compile "com.android.support:recyclerview-v7:$project.recyclerViewVersion"
-
-    compile 'com.rockerhieu:rv-adapter-states:1.0'
+    //Material Progress Bar
+    compile "me.zhanghai.android.materialprogressbar:library:$project.materialProgressBarVersion"
 
     //Design Library
     compile "com.android.support:design:$project.designLibraryVersion"

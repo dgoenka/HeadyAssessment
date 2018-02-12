@@ -72,7 +72,6 @@ public class MainActivity extends BaseAcitivity<MainPresenter> implements MainVi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        AndroidInjection.inject(this);
         ButterKnife.bind(this);
         mBottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         if(savedInstanceState==null){
