@@ -121,6 +121,7 @@ public class MainPagerAdapter extends PagerAdapter {
         for (int i = position; i < views.size(); i++) {
             removeView(viewPager, i);
         }
+        notifyDataSetChanged();
     }
 
     // Other relevant methods:

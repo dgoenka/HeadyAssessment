@@ -20,12 +20,14 @@ import com.divyanshgoenka.headyassessment.android.adapter.ProductRankingRecycler
 import com.divyanshgoenka.headyassessment.android.animation.FixedSpeedScroller;
 import com.divyanshgoenka.headyassessment.log.Logger;
 import com.divyanshgoenka.headyassessment.pojo.Category;
+import com.divyanshgoenka.headyassessment.pojo.CategoryListableBinding;
 import com.divyanshgoenka.headyassessment.pojo.Listable;
 import com.divyanshgoenka.headyassessment.presenter.MainPresenter;
 import com.divyanshgoenka.headyassessment.view.MainView;
 import com.divyanshgoenka.headyassessment.view.ProductView;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -35,7 +37,7 @@ import butterknife.ButterKnife;
 public class ProductFragment extends Fragment implements ProductView {
     private static final String CATEGORY_ARGUMENT = "CATEGORY_ARGUMENT";
     private static final String CURRENT_POSITION = "CURRENT_POSITION";
-
+    private final List<CategoryListableBinding> categoryListableBindings = new ArrayList<>();
     Category mCategory;
     @BindView(R.id.pager)
     ViewPager viewPager;
@@ -84,6 +86,7 @@ public class ProductFragment extends Fragment implements ProductView {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putInt(ProductFragment.CURRENT_POSITION, currentPositon);
     }
 
     @Override
@@ -94,6 +97,14 @@ public class ProductFragment extends Fragment implements ProductView {
         ButterKnife.bind(this, view);
         mainPagerAdapter = new MainPagerAdapter();
         viewPager.setAdapter(mainPagerAdapter);
+        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                currentPositon = position;
+                mainView.setTitle(categoryListableBindings.get(position).getCategory());
+            }
+        });
         slowDownViewPager();
         return view;
     }
@@ -125,12 +136,19 @@ public class ProductFragment extends Fragment implements ProductView {
     }
 
     @Override
-    public void showList(int position, List<Listable> listables) {
+    public void showList(int position, List<Listable> listables, Category category) {
         Logger.d("In generateView, listables is " + listables);
+        for (int i = position; i < categoryListableBindings.size(); i++) {
+            categoryListableBindings.remove(i);
+        }
+        categoryListableBindings.add(new CategoryListableBinding(category, listables));
+        mCategory = category;
+
         View view = layoutInflater.inflate(R.layout.fragment_product_list, viewPager, false);
         mainPagerAdapter.removeAllStarting(position, viewPager);
         mainPagerAdapter.addView(view);
         mainPagerAdapter.notifyDataSetChanged();
+
         ListViewHolder listViewHolder = new ListViewHolder();
         ButterKnife.bind(listViewHolder, view);
         listViewHolder.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
@@ -152,7 +170,7 @@ public class ProductFragment extends Fragment implements ProductView {
     @Override
     public void onCategoryClicked(Category category) {
         Logger.d("in ProductFragment.onCategoryClicked");
-        mainPresenter.loadCategoriesAndProducts(viewPager.getCurrentItem() + 1, category);
+        mainPresenter.loadCategoriesAndProducts(currentPositon + 1, category);
     }
 
     public static class ListViewHolder {

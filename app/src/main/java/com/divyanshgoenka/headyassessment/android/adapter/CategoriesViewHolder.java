@@ -40,12 +40,12 @@ public class CategoriesViewHolder extends BaseViewHolder {
         categories = (CategoryList) categoryList;
         gridLayout.getLayoutParams().height = resources.getDimensionPixelSize(R.dimen.category_item_height) * ((int) Math.ceil((double) categories.size() / (double) resources.getInteger(R.integer.category_list_item_column_count)));
         for (Category category : categories) {
-            gridLayout.addView(generateView(category));
+            gridLayout.addView(generateCategoryView(category));
         }
 
     }
 
-    private View generateView(Category category) {
+    private View generateCategoryView(Category category) {
         View categoryView = layoutInflater.inflate(R.layout.category_list_item, null, true);
         CategoryViewHolder categoryViewHolder = new CategoryViewHolder();
         ButterKnife.bind(categoryViewHolder, categoryView);

@@ -12,7 +12,7 @@ import java.util.List;
 public interface ProductView extends BaseView {
     void showLoading();
 
-    void showList(int position, List<Listable> listables);
+    void showList(int position, List<Listable> listables, Category category);
 
     void hideLoading();
 

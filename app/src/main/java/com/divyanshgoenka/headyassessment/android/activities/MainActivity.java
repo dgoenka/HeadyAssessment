@@ -13,8 +13,10 @@ import com.divyanshgoenka.headyassessment.R;
 import com.divyanshgoenka.headyassessment.android.fragment.ProductFragment;
 import com.divyanshgoenka.headyassessment.android.fragment.RankingFragment;
 import com.divyanshgoenka.headyassessment.log.Logger;
+import com.divyanshgoenka.headyassessment.pojo.Category;
 import com.divyanshgoenka.headyassessment.pojo.Product;
 import com.divyanshgoenka.headyassessment.presenter.MainPresenter;
+import com.divyanshgoenka.headyassessment.util.Validations;
 import com.divyanshgoenka.headyassessment.view.MainView;
 
 import butterknife.BindView;
@@ -78,6 +80,15 @@ public class MainActivity extends BaseAcitivity<MainPresenter> implements MainVi
     @Override
     public void showProduct(Product product) {
 
+    }
+
+    @Override
+    public void setTitle(Category category) {
+        if (category == null || Validations.isEmptyOrNull(category.getName())) {
+            setTitle(R.string.app_name);
+        } else {
+            super.setTitle(category.getName());
+        }
     }
 
     @Override

@@ -1,12 +1,12 @@
 
 package com.divyanshgoenka.headyassessment.pojo;
 
-import java.io.Serializable;
-import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
 
-public class Product implements Listable,Serializable {
+
+public class Product implements Listable {
 
     @SerializedName("date_added")
     private String mDateAdded;
@@ -22,6 +22,9 @@ public class Product implements Listable,Serializable {
     private Long mViewCount;
     @SerializedName("order_count")
     private Long mOrderCount;
+    @SerializedName("shares")
+
+    private Long mShares;
 
     public Long getOrderCount() {
         return mOrderCount;
@@ -39,74 +42,78 @@ public class Product implements Listable,Serializable {
         this.mShares = mShares;
     }
 
-    @SerializedName("shares")
-
-    private Long mShares;
-    public void setDateAdded(String mDateAdded) {
-        this.mDateAdded = mDateAdded;
-    }
-
-    public void setId(Long mId) {
-        this.mId = mId;
-    }
-
-    public void setName(String mName) {
-        this.mName = mName;
-    }
-
-    public void setTax(Tax mTax) {
-        this.mTax = mTax;
-    }
-
-    public void setVariants(List<Variant> mVariants) {
-        this.mVariants = mVariants;
-    }
-
-    public void setViewCount(Long mViewCount) {
-        this.mViewCount = mViewCount;
-    }
-
     public String getDateAdded() {
         return mDateAdded;
+    }
+
+    public void setDateAdded(String mDateAdded) {
+        this.mDateAdded = mDateAdded;
     }
 
     public Long getId() {
         return mId;
     }
 
+    public void setId(Long mId) {
+        this.mId = mId;
+    }
+
     public String getName() {
         return mName;
+    }
+
+    public void setName(String mName) {
+        this.mName = mName;
     }
 
     public Tax getTax() {
         return mTax;
     }
 
+    public void setTax(Tax mTax) {
+        this.mTax = mTax;
+    }
+
     public List<Variant> getVariants() {
         return mVariants;
+    }
+
+    public void setVariants(List<Variant> mVariants) {
+        this.mVariants = mVariants;
     }
 
     public Long getViewCount() {
         return mViewCount;
     }
 
+    public void setViewCount(Long mViewCount) {
+        this.mViewCount = mViewCount;
+    }
+
     public void setCountsSafely(Product p2) {
         if(p2!=null){
 
-            if(getViewCount()==null && p2.getViewCount()!=null)
+            if (getViewCount() == null && p2.getViewCount() != null) {
                 setViewCount(p2.getViewCount());
-            if(getOrderCount()==null && p2.getOrderCount()!=null)
+            }
+            if (getOrderCount() == null && p2.getOrderCount() != null) {
                 setOrderCount(p2.getOrderCount());
-            if(getShares()==null && p2.getShares() !=null)
+            }
+            if (getShares() == null && p2.getShares() != null) {
                 setShares(p2.getShares());
+            }
 
         }
     }
 
     public Long getCountForRanking(String ranking) {
         ranking = ranking.toLowerCase();
-        if(ranking.contains("share")) return getShares();
-        if(ranking.contains("order")) return getOrderCount();
+        if (ranking.contains("share")) {
+            return getShares();
+        }
+        if (ranking.contains("order")) {
+            return getOrderCount();
+        }
         return getViewCount();
     }
 

@@ -94,7 +94,9 @@ public class MainPresenter implements BasePresenter<MainView> {
     }
 
     public void onProductClicked(Product product) {
-        mainView.showProduct(product);
+        if (mainView != null) {
+            mainView.showProduct(product);
+        }
     }
 
     @Override
@@ -120,7 +122,7 @@ public class MainPresenter implements BasePresenter<MainView> {
             public void onNext(List<Listable> listables) {
                 Logger.d("In onNext, ");
                 if (productView != null) {
-                    productView.showList(position, listables);
+                    productView.showList(position, listables, mCategory);
                 }
             }
 
