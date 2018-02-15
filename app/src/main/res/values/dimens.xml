@@ -6,4 +6,6 @@
     <dimen name="name_text_size">20dp</dimen>
     <dimen name="description_text_size">10dp</dimen>
     <dimen name="ranking_spinner_select_item_text_size">15dp</dimen>
+    <integer name="category_list_item_column_count">4</integer>
+    <dimen name="category_item_height">100dp</dimen>
 </resources>

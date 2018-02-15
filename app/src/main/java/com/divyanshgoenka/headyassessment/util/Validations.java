@@ -1,9 +1,6 @@
 package com.divyanshgoenka.headyassessment.util;
 
-import com.divyanshgoenka.headyassessment.pojo.Category;
-
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by divyanshgoenka on 05/02/18.
@@ -12,5 +9,9 @@ import java.util.List;
 public class Validations {
     public static boolean isEmptyOrNull(Collection collection) {
         return collection == null || collection.size()<1;
+    }
+
+    public static boolean isEmptyOrNull(CharSequence str) {
+        return str == null || str.length() < 1;
     }
 }

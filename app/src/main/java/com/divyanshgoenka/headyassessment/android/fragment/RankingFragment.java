@@ -19,6 +19,7 @@ import android.widget.Spinner;
 
 import com.divyanshgoenka.headyassessment.R;
 import com.divyanshgoenka.headyassessment.android.adapter.ProductRankingRecyclerViewAdapter;
+import com.divyanshgoenka.headyassessment.log.Logger;
 import com.divyanshgoenka.headyassessment.pojo.Product;
 import com.divyanshgoenka.headyassessment.pojo.Ranking;
 import com.divyanshgoenka.headyassessment.presenter.MainPresenter;
@@ -30,7 +31,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 /**
  * A fragment representing a ranking of products.
@@ -77,7 +77,7 @@ public class RankingFragment extends Fragment implements RankingView, AdapterVie
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Timber.i(RankingFragment.TAG, "in RankingFragment onCreateView");
+        Logger.d("in RankingFragment onCreateView");
         View view = inflater.inflate(R.layout.fragment_product_list, container, false);
         Context context = view.getContext();
         ButterKnife.bind(this,view);
@@ -89,15 +89,22 @@ public class RankingFragment extends Fragment implements RankingView, AdapterVie
             selectedPosition = savedInstanceState.getInt(RankingFragment.SAVED_SPINNER_POSITION, 0);
             recyclerViewLastPositon = savedInstanceState.getInt(RankingFragment.SAVE_RECYCLER_POSITION, 0);
         }
-        mainPresenter.loadRankings();
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mainPresenter.loadRankings();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(RankingFragment.SAVED_LAYOUT_MANAGER, recyclerView.getLayoutManager().onSaveInstanceState());
-        outState.putLong(RankingFragment.LIST_VERSION_AT, listVersionAt);
+        if (listVersionAt != null) {
+            outState.putLong(RankingFragment.LIST_VERSION_AT, listVersionAt);
+        }
         outState.putInt(RankingFragment.SAVE_RECYCLER_POSITION, ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition());
         if (rankingSpinner != null) {
             outState.putParcelable(RankingFragment.SAVED_SPINNER_STATE, rankingSpinner.onSaveInstanceState());
@@ -178,7 +185,7 @@ public class RankingFragment extends Fragment implements RankingView, AdapterVie
 
     @Override
     public void onLoadRankingException(Throwable e) {
-        Timber.e(e);
+        Logger.e(e);
     }
 
     @Override

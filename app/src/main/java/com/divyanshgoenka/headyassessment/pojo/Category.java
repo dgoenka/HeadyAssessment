@@ -1,14 +1,15 @@
 
 package com.divyanshgoenka.headyassessment.pojo;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.List;
-import com.google.gson.annotations.SerializedName;
 
 public class Category implements Serializable {
 
     @SerializedName("child_categories")
-    private List<Object> mChildCategories;
+    private List<Integer> mChildCategories;
     @SerializedName("id")
     private Long mId;
     @SerializedName("name")
@@ -16,7 +17,12 @@ public class Category implements Serializable {
     @SerializedName("products")
     private List<Product> mProducts;
 
-    public List<Object> getChildCategories() {
+    @Override
+    public String toString() {
+        return getName();
+    }
+
+    public List<Integer> getChildCategories() {
         return mChildCategories;
     }
 
@@ -34,12 +40,12 @@ public class Category implements Serializable {
 
     public static class Builder {
 
-        private List<Object> mChildCategories;
+        private List<Integer> mChildCategories;
         private Long mId;
         private String mName;
         private List<Product> mProducts;
 
-        public Category.Builder withChildCategories(List<Object> childCategories) {
+        public Category.Builder withChildCategories(List<Integer> childCategories) {
             mChildCategories = childCategories;
             return this;
         }

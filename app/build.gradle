@@ -18,8 +18,7 @@ project.ext {
     okHttpVersion = "3.9.1"
     gsonVersion = "2.8.2"
     glideVersion = "4.6.1"
-    timberVersion = "4.5.1"
-
+    timberVersion = "4.6.1"
 
 }
 
@@ -49,6 +48,7 @@ android {
 
 dependencies {
 
+    implementation 'com.android.support:support-v4:27.0.2'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "com.android.support:appcompat-v7:$project.supportLibraryVersion"
 
@@ -101,6 +101,5 @@ dependencies {
     // Timber
     compile "com.jakewharton.timber:timber:$project.timberVersion"
 
-
-
+    testCompile 'junit:junit:4.12'
 }

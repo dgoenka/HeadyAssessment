@@ -1,5 +1,6 @@
 package com.divyanshgoenka.headyassessment.view;
 
+import com.divyanshgoenka.headyassessment.pojo.Product;
 import com.divyanshgoenka.headyassessment.presenter.MainPresenter;
 
 /**
@@ -12,4 +13,6 @@ public interface MainView extends BaseView {
     void switchToRankings();
 
     MainPresenter getPresenter();
+
+    void showProduct(Product product);
 }

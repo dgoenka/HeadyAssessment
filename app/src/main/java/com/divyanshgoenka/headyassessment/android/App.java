@@ -5,6 +5,8 @@ import android.app.Application;
 
 import com.divyanshgoenka.headyassessment.BuildConfig;
 import com.divyanshgoenka.headyassessment.android.di.DaggerAppComponent;
+import com.divyanshgoenka.headyassessment.android.log.TimberLoggerImplementation;
+import com.divyanshgoenka.headyassessment.log.Logger;
 
 import javax.inject.Inject;
 
@@ -23,6 +25,7 @@ public class App extends Application implements HasActivityInjector {
 
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
+            Logger.setLoggerImplementation(new TimberLoggerImplementation());
         }
 
         DaggerAppComponent

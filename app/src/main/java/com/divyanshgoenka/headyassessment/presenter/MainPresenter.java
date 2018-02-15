@@ -1,11 +1,16 @@
 package com.divyanshgoenka.headyassessment.presenter;
 
+import com.divyanshgoenka.headyassessment.android.fragment.ProductFragment;
 import com.divyanshgoenka.headyassessment.android.fragment.RankingFragment;
+import com.divyanshgoenka.headyassessment.log.Logger;
+import com.divyanshgoenka.headyassessment.pojo.Category;
+import com.divyanshgoenka.headyassessment.pojo.Listable;
 import com.divyanshgoenka.headyassessment.pojo.Product;
 import com.divyanshgoenka.headyassessment.pojo.Ranking;
 import com.divyanshgoenka.headyassessment.repository.CategoryProductRepository;
 import com.divyanshgoenka.headyassessment.rx.SchedulersFacade;
 import com.divyanshgoenka.headyassessment.view.MainView;
+import com.divyanshgoenka.headyassessment.view.ProductView;
 import com.divyanshgoenka.headyassessment.view.RankingView;
 
 import java.util.List;
@@ -13,7 +18,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Observer;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+
 
 /**
  * Created by divyanshgoenka on 04/02/18.
@@ -25,6 +32,8 @@ public class MainPresenter implements BasePresenter<MainView> {
     RankingView rankingView;
     SchedulersFacade schedulersFacade;
     CategoryProductRepository categoryProductRepository;
+    CompositeDisposable productsCompositeDisposable = new CompositeDisposable();
+    private ProductView productView;
 
     @Inject
     public MainPresenter(MainView mainView, CategoryProductRepository categoryProductRepository, SchedulersFacade schedulersFacade) {
@@ -85,11 +94,56 @@ public class MainPresenter implements BasePresenter<MainView> {
     }
 
     public void onProductClicked(Product product) {
-        //TODO Detail View of Product
+        mainView.showProduct(product);
     }
 
     @Override
     public void set(MainView mainView) {
         this.mainView = mainView;
+    }
+
+    public void setProductView(ProductFragment productView) {
+        this.productView = productView;
+    }
+
+    public void loadCategoriesAndProducts(int position, Category mCategory) {
+        Logger.d("inside loadCategoriesAndProducts, mCategory is" + mCategory);
+        categoryProductRepository.getChildrenOf(mCategory).subscribeOn(schedulersFacade.io()).observeOn(schedulersFacade.ui()).subscribe(new Observer<List<Listable>>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                if (productView != null) {
+                    productView.showLoading();
+                }
+            }
+
+            @Override
+            public void onNext(List<Listable> listables) {
+                Logger.d("In onNext, ");
+                if (productView != null) {
+                    productView.showList(position, listables);
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                if (productView != null) {
+                    productView.showError();
+                }
+            }
+
+            @Override
+            public void onComplete() {
+                if (productView != null) {
+                    productView.hideLoading();
+                }
+            }
+        });
+    }
+
+    public void onCategoryClicked(Category category) {
+        Logger.d("in onCategoryClicked");
+        if (productView != null) {
+            productView.onCategoryClicked(category);
+        }
     }
 }

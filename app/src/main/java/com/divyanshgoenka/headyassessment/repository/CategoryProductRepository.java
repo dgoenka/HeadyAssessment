@@ -2,8 +2,11 @@ package com.divyanshgoenka.headyassessment.repository;
 
 import com.divyanshgoenka.headyassessment.Constants;
 import com.divyanshgoenka.headyassessment.api.HeadyService;
+import com.divyanshgoenka.headyassessment.log.Logger;
 import com.divyanshgoenka.headyassessment.pojo.Category;
+import com.divyanshgoenka.headyassessment.pojo.CategoryList;
 import com.divyanshgoenka.headyassessment.pojo.CategoryRankingData;
+import com.divyanshgoenka.headyassessment.pojo.Listable;
 import com.divyanshgoenka.headyassessment.pojo.Product;
 import com.divyanshgoenka.headyassessment.pojo.Ranking;
 import com.divyanshgoenka.headyassessment.util.Validations;
@@ -13,29 +16,27 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
-import okhttp3.OkHttpClient;
-import okhttp3.internal.cache.DiskLruCache;
-import okhttp3.internal.io.FileSystem;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+
 
 /**
  * Created by divyanshgoenka on 05/02/18.
  */
 
 public class CategoryProductRepository {
-    private HeadyService categoryProductApi;
+
+
+    private final HashMap<Long, Product> productHashMap = new HashMap<>();
+    private final HeadyService categoryProductApi;
     private CategoryRankingData lastFetchedDataInMemory;
-    private final HashMap<Long,Product> productHashMap = new HashMap<>();
+    private HashMap<Integer, Category> categoryMap;
+
     @Inject
     public CategoryProductRepository(){
 
@@ -49,34 +50,117 @@ public class CategoryProductRepository {
         categoryProductApi = retrofit.create(HeadyService.class);
     }
 
+    public Observable<List<Listable>> getChildrenOf(Category category) {
+        Logger.d("inside getChildrenOf, shouldRefetchData is" + shouldRefetchData());
+        if (shouldRefetchData()) {
+            return createObservableToProcessCategoryProductTransversalInfo(createCategoryRankingDataObservable(), category);
+        }
+        return createObservableToProcessCategoryProductTransversalInfo(Observable.just(lastFetchedDataInMemory), category);
+    }
+
+    private Observable<List<Listable>> createObservableToProcessCategoryProductTransversalInfo(Observable<CategoryRankingData> categoryRankingDataObservable, Category category) {
+        Logger.d("inside createObservableToProcessCategoryProductTransversalInfo, category is" + category);
+        return categoryRankingDataObservable.flatMap(categoryRankingData -> Observable.fromCallable(() -> {
+            Logger.d("inside the observable of createObservableToProcessCategoryProductTransversalInfo, categoryRankingData is" + categoryRankingData + " category is " + category);
+            return processAndReturnTransversalData(categoryRankingData, category);
+        }));
+    }
+
+
+    private List<Listable> processAndReturnTransversalData(CategoryRankingData categoryRankingData, Category category) {
+        Logger.d("in processAndReturnTransversalData category is" + category);
+        if (category == null) {
+            Logger.d("in processAndReturnTransversalData going to findAndAddCategoriesAndProductsAtRoot");
+
+            return findAndAddCategoriesAndProductsAtRoot(categoryRankingData);
+        }
+
+        return findAndAddCategoriesAndProductsIn(categoryRankingData, category);
+    }
+
+    private List<Listable> findAndAddCategoriesAndProductsAtRoot(CategoryRankingData categoryRankingData) {
+        List<Listable> items = new ArrayList<>();
+        CategoryList categoryList = new CategoryList();
+        for (Category categoryFromList : categoryRankingData.getCategories()) {
+            Logger.d("Checking for category, " + categoryFromList.getId() + ". " + categoryFromList.getName());
+            boolean isRootCategory = true;
+            for (Category categoryToCheckIn : categoryRankingData.getCategories()) {
+                Logger.d("in category, " + categoryToCheckIn.getId() + ". " + categoryToCheckIn.getName());
+
+                if (categoryFromList.getId() != categoryToCheckIn.getId()) {
+                    List<Integer> childCategories = categoryToCheckIn.getChildCategories();
+                    for (Integer childCategory : childCategories) {
+                        if (childCategory.longValue() == categoryFromList.getId()) {
+                            isRootCategory = false;
+                            Logger.d(categoryFromList.getName() + " is a child of " + categoryToCheckIn.getName());
+                            break;
+                        }
+                    }
+                    if (!isRootCategory) {
+                        break;
+                    }
+                }
+            }
+
+            Logger.d("Checking for category, " + categoryFromList.getName() + " isRootCategory? " + isRootCategory);
+
+
+            if (isRootCategory) {
+                categoryList.add(categoryFromList);
+            }
+        }
+        if (!Validations.isEmptyOrNull(categoryList)) {
+            items.add(categoryList);
+        }
+        return items;
+    }
+
+    private List<Listable> findAndAddCategoriesAndProductsIn(CategoryRankingData categoryRankingData, Category category) {
+        List<Listable> items = new ArrayList<>();
+        CategoryList categoryList = new CategoryList();
+        List<Integer> childCategories = category.getChildCategories();
+        for (Integer childCategory : childCategories) {
+            for (Category categoryFromList : categoryRankingData.getCategories()) {
+                if (childCategory.longValue() == categoryFromList.getId()) {
+                    categoryList.add(categoryFromList);
+                }
+            }
+        }
+        if (!Validations.isEmptyOrNull(categoryList)) {
+            items.add(categoryList);
+        }
+        
+        for (Product product : category.getProducts()) {
+            items.add(product);
+        }
+
+        return items;
+    }
 
 
     public Observable<List<Ranking>> getProductsByRank(){
 
-        if(lastFetchedDataInMemory == null || dataIsTooOld(lastFetchedDataInMemory.getFetchedAt())){
+        if (shouldRefetchData()) {
             return createObservableToProcessCategoryProductInfo(createCategoryRankingDataObservable());
         }
 
         return Observable.just(lastFetchedDataInMemory.getRankings());
     }
 
+    public boolean shouldRefetchData() {
+        return lastFetchedDataInMemory == null || dataIsTooOld(lastFetchedDataInMemory.getFetchedAt());
+    }
+
+
     private Observable<CategoryRankingData> createCategoryRankingDataObservable(){
         return categoryProductApi.getData();
     }
 
     private Observable<List<Ranking>> createObservableToProcessCategoryProductInfo(Observable<CategoryRankingData> categoryRankingDataObservable) {
-        return categoryRankingDataObservable.flatMap(new Function<CategoryRankingData, ObservableSource<List<Ranking>>>() {
-            @Override
-            public ObservableSource<List<Ranking>> apply(CategoryRankingData categoryRankingData) throws Exception {
-                categoryRankingData.setFetchedAt(System.currentTimeMillis());
-                lastFetchedDataInMemory = categoryRankingData;
-                return Observable.fromCallable(new Callable<List<Ranking>>() {
-                    @Override
-                    public List<Ranking> call() throws Exception {
-                        return processAndReturnCategoryRankData(categoryRankingData);
-                    }
-                });
-            }
+        return categoryRankingDataObservable.flatMap(categoryRankingData -> {
+            categoryRankingData.setFetchedAt(System.currentTimeMillis());
+            lastFetchedDataInMemory = categoryRankingData;
+            return Observable.fromCallable(() -> processAndReturnCategoryRankData(categoryRankingData));
         });
     }
 

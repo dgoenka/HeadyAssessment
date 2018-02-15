@@ -2,13 +2,9 @@ package com.divyanshgoenka.headyassessment.android.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
-import com.divyanshgoenka.headyassessment.R;
 import com.divyanshgoenka.headyassessment.presenter.BasePresenter;
-import com.divyanshgoenka.headyassessment.view.BaseView;
 
 import javax.inject.Inject;
 
@@ -28,18 +24,6 @@ public abstract class BaseAcitivity<P extends BasePresenter> extends AppCompatAc
 
     @Inject
     P Presenter;
-
-    private static final String BACK_STACK_ROOT_TAG = "root_fragment";
-
-
-    protected void showFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.popBackStack(BACK_STACK_ROOT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        fragmentManager.beginTransaction().replace(R.id.fragment_container,fragment)
-        .addToBackStack(BACK_STACK_ROOT_TAG).commit();
-        invalidateOptionsMenu();
-        setTitle(R.string.app_name);
-    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
