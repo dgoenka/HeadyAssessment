@@ -1,5 +1,6 @@
 package com.divyanshgoenka.headyassessment.android.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
@@ -10,6 +11,7 @@ import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import com.divyanshgoenka.headyassessment.R;
+import com.divyanshgoenka.headyassessment.android.fragment.KeepClearBackStackListener;
 import com.divyanshgoenka.headyassessment.android.fragment.ProductFragment;
 import com.divyanshgoenka.headyassessment.android.fragment.RankingFragment;
 import com.divyanshgoenka.headyassessment.log.Logger;
@@ -17,6 +19,7 @@ import com.divyanshgoenka.headyassessment.pojo.Category;
 import com.divyanshgoenka.headyassessment.pojo.Product;
 import com.divyanshgoenka.headyassessment.presenter.MainPresenter;
 import com.divyanshgoenka.headyassessment.util.Validations;
+import com.divyanshgoenka.headyassessment.view.BackButtonConsumer;
 import com.divyanshgoenka.headyassessment.view.MainView;
 
 import butterknife.BindView;
@@ -48,6 +51,7 @@ public class MainActivity extends BaseAcitivity<MainPresenter> implements MainVi
     BottomNavigationView mBottomNavigationView;
     @BindView(R.id.fragment_container)
     FrameLayout container;
+    private BackButtonConsumer backButtonConsumer;
 
     @Override
     public void switchToProducts() {
@@ -61,15 +65,28 @@ public class MainActivity extends BaseAcitivity<MainPresenter> implements MainVi
 
     @Override
     public void switchToRankings() {
+        Logger.d("in switchToRankings, switching to RankingFragment");
         showFragment(RankingFragment.newInstance());
     }
 
     protected void showFragment(Fragment fragment) {
+        resetActionBar();
+        replaceFragment(fragment);
+    }
+
+    private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.fragment_container, fragment)
-                .commitNowAllowingStateLoss();
-        invalidateOptionsMenu();
+        int newBackStackLength = fragmentManager.getBackStackEntryCount() + 1;
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment, MainActivity.BACK_STACK_ROOT_TAG)
+                .commitNow();
+    }
+
+    public void resetActionBar() {
         setTitle(R.string.app_name);
+        hideBackButton();
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -79,7 +96,10 @@ public class MainActivity extends BaseAcitivity<MainPresenter> implements MainVi
 
     @Override
     public void showProduct(Product product) {
-
+        Logger.d("in showProduct");
+        Intent intent = new Intent(this, ProductActivity.class);
+        intent.putExtra(ProductActivity.CURRENT_PRODUCT, product);
+        startActivity(intent);
     }
 
     @Override
@@ -92,6 +112,34 @@ public class MainActivity extends BaseAcitivity<MainPresenter> implements MainVi
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Logger.d("in onOptionsItemSelected, item.getItemId is " + item.getItemId() + " android.R.id.home is " + android.R.id.home);
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (backButtonConsumer != null) {
+                    backButtonConsumer.onActivityButonClicked();
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void hideBackButton() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+    }
+
+    @Override
+    public void showBackButton() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public void setBackButtonConsumer(BackButtonConsumer backButtonConsumer) {
+        this.backButtonConsumer = backButtonConsumer;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -100,6 +148,8 @@ public class MainActivity extends BaseAcitivity<MainPresenter> implements MainVi
         if(savedInstanceState==null){
             mBottomNavigationView.setSelectedItemId(MainActivity.DEFAULT_BOTTOM_NAVIGATION_POSITION);
         }
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.addOnBackStackChangedListener(new KeepClearBackStackListener(fragmentManager));
     }
 
 

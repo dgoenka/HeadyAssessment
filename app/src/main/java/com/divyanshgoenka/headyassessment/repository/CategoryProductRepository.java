@@ -17,12 +17,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import io.reactivex.Observable;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 
 /**
@@ -33,24 +28,16 @@ public class CategoryProductRepository {
 
 
     private final HashMap<Long, Product> productHashMap = new HashMap<>();
-    private final HeadyService categoryProductApi;
+    HeadyService headyService;
     private CategoryRankingData lastFetchedDataInMemory;
     private HashMap<Integer, Category> categoryMap;
 
-    @Inject
-    public CategoryProductRepository(){
-
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.API_END_POINT)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build();
-
-        categoryProductApi = retrofit.create(HeadyService.class);
+    public CategoryProductRepository(HeadyService headyService) {
+        this.headyService = headyService;
     }
 
-    public Observable<List<Listable>> getChildrenOf(Category category) {
+
+    public Observable<ArrayList<Listable>> getChildrenOf(Category category) {
         Logger.d("inside getChildrenOf, shouldRefetchData is" + shouldRefetchData());
         if (shouldRefetchData()) {
             return createObservableToProcessCategoryProductTransversalInfo(createCategoryRankingDataObservable(), category);
@@ -58,7 +45,7 @@ public class CategoryProductRepository {
         return createObservableToProcessCategoryProductTransversalInfo(Observable.just(lastFetchedDataInMemory), category);
     }
 
-    private Observable<List<Listable>> createObservableToProcessCategoryProductTransversalInfo(Observable<CategoryRankingData> categoryRankingDataObservable, Category category) {
+    private Observable<ArrayList<Listable>> createObservableToProcessCategoryProductTransversalInfo(Observable<CategoryRankingData> categoryRankingDataObservable, Category category) {
         Logger.d("inside createObservableToProcessCategoryProductTransversalInfo, category is" + category);
         return categoryRankingDataObservable.flatMap(categoryRankingData -> Observable.fromCallable(() -> {
             Logger.d("inside the observable of createObservableToProcessCategoryProductTransversalInfo, categoryRankingData is" + categoryRankingData + " category is " + category);
@@ -67,7 +54,7 @@ public class CategoryProductRepository {
     }
 
 
-    private List<Listable> processAndReturnTransversalData(CategoryRankingData categoryRankingData, Category category) {
+    private ArrayList<Listable> processAndReturnTransversalData(CategoryRankingData categoryRankingData, Category category) {
         Logger.d("in processAndReturnTransversalData category is" + category);
         if (category == null) {
             Logger.d("in processAndReturnTransversalData going to findAndAddCategoriesAndProductsAtRoot");
@@ -78,8 +65,8 @@ public class CategoryProductRepository {
         return findAndAddCategoriesAndProductsIn(categoryRankingData, category);
     }
 
-    private List<Listable> findAndAddCategoriesAndProductsAtRoot(CategoryRankingData categoryRankingData) {
-        List<Listable> items = new ArrayList<>();
+    private ArrayList<Listable> findAndAddCategoriesAndProductsAtRoot(CategoryRankingData categoryRankingData) {
+        ArrayList<Listable> items = new ArrayList<>();
         CategoryList categoryList = new CategoryList();
         for (Category categoryFromList : categoryRankingData.getCategories()) {
             Logger.d("Checking for category, " + categoryFromList.getId() + ". " + categoryFromList.getName());
@@ -115,8 +102,8 @@ public class CategoryProductRepository {
         return items;
     }
 
-    private List<Listable> findAndAddCategoriesAndProductsIn(CategoryRankingData categoryRankingData, Category category) {
-        List<Listable> items = new ArrayList<>();
+    private ArrayList<Listable> findAndAddCategoriesAndProductsIn(CategoryRankingData categoryRankingData, Category category) {
+        ArrayList<Listable> items = new ArrayList<>();
         CategoryList categoryList = new CategoryList();
         List<Integer> childCategories = category.getChildCategories();
         for (Integer childCategory : childCategories) {
@@ -153,7 +140,7 @@ public class CategoryProductRepository {
 
 
     private Observable<CategoryRankingData> createCategoryRankingDataObservable(){
-        return categoryProductApi.getData();
+        return headyService.getData();
     }
 
     private Observable<List<Ranking>> createObservableToProcessCategoryProductInfo(Observable<CategoryRankingData> categoryRankingDataObservable) {

@@ -18,4 +18,10 @@ public interface MainView extends BaseView {
     void showProduct(Product product);
 
     void setTitle(Category category);
+
+    void hideBackButton();
+
+    void showBackButton();
+
+    void setBackButtonConsumer(BackButtonConsumer backButtonConsumer);
 }

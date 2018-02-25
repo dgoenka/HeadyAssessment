@@ -7,7 +7,7 @@ import com.divyanshgoenka.headyassessment.android.log.TimberLoggerImplementation
  */
 
 public class Logger {
-    public static LoggerImplementation loggerImplementation;
+    private static LoggerImplementation loggerImplementation;
 
     public static void d(String s) {
         if (Logger.loggerImplementation != null) {

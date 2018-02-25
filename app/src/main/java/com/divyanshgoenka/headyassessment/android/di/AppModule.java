@@ -2,9 +2,9 @@ package com.divyanshgoenka.headyassessment.android.di;
 
 import android.content.Context;
 
-
 import com.divyanshgoenka.headyassessment.android.App;
 import com.divyanshgoenka.headyassessment.android.rx.AndroidSchedulersFacade;
+import com.divyanshgoenka.headyassessment.api.RetrofitClientProvider;
 import com.divyanshgoenka.headyassessment.repository.CategoryProductRepository;
 
 import javax.inject.Singleton;
@@ -23,14 +23,16 @@ public class AppModule {
         return application.getApplicationContext();
     }
 
-    @Singleton
-    @Provides
-    CategoryProductRepository provideCategoryProductRepository() {
-        return new CategoryProductRepository();
-    }
-
     @Provides
     AndroidSchedulersFacade provideSchedulersFacade() {
         return new AndroidSchedulersFacade();
     }
+
+    @Singleton
+    @Provides
+    CategoryProductRepository providesCategoryProductRepository() {
+        CategoryProductRepository categoryProductRepository = new CategoryProductRepository(RetrofitClientProvider.buildRetrofitClient());
+        return categoryProductRepository;
+    }
+
 }

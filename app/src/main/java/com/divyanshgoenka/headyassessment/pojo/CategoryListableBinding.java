@@ -1,16 +1,17 @@
 package com.divyanshgoenka.headyassessment.pojo;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by divyanshgoenka on 15/02/18.
  */
 
-public class CategoryListableBinding {
+public class CategoryListableBinding implements Serializable {
     Category category;
-    List<Listable> listableList;
+    ArrayList<Listable> listableList;
 
-    public CategoryListableBinding(Category category, List<Listable> listableList) {
+    public CategoryListableBinding(Category category, ArrayList<Listable> listableList) {
         this.category = category;
         this.listableList = listableList;
     }
@@ -23,11 +24,11 @@ public class CategoryListableBinding {
         this.category = category;
     }
 
-    public List<Listable> getListableList() {
+    public ArrayList<Listable> getListableList() {
         return listableList;
     }
 
-    public void setListableList(List<Listable> listableList) {
+    public void setListableList(ArrayList<Listable> listableList) {
         this.listableList = listableList;
     }
 

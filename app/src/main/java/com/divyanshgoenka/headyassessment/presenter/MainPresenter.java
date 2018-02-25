@@ -13,6 +13,7 @@ import com.divyanshgoenka.headyassessment.view.MainView;
 import com.divyanshgoenka.headyassessment.view.ProductView;
 import com.divyanshgoenka.headyassessment.view.RankingView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -110,7 +111,7 @@ public class MainPresenter implements BasePresenter<MainView> {
 
     public void loadCategoriesAndProducts(int position, Category mCategory) {
         Logger.d("inside loadCategoriesAndProducts, mCategory is" + mCategory);
-        categoryProductRepository.getChildrenOf(mCategory).subscribeOn(schedulersFacade.io()).observeOn(schedulersFacade.ui()).subscribe(new Observer<List<Listable>>() {
+        categoryProductRepository.getChildrenOf(mCategory).subscribeOn(schedulersFacade.io()).observeOn(schedulersFacade.ui()).subscribe(new Observer<ArrayList<Listable>>() {
             @Override
             public void onSubscribe(Disposable d) {
                 if (productView != null) {
@@ -119,7 +120,7 @@ public class MainPresenter implements BasePresenter<MainView> {
             }
 
             @Override
-            public void onNext(List<Listable> listables) {
+            public void onNext(ArrayList<Listable> listables) {
                 Logger.d("In onNext, ");
                 if (productView != null) {
                     productView.showList(position, listables, mCategory);

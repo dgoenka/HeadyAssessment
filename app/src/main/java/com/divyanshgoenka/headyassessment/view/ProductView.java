@@ -3,7 +3,7 @@ package com.divyanshgoenka.headyassessment.view;
 import com.divyanshgoenka.headyassessment.pojo.Category;
 import com.divyanshgoenka.headyassessment.pojo.Listable;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by divyanshgoenka on 14/02/18.
@@ -12,7 +12,7 @@ import java.util.List;
 public interface ProductView extends BaseView {
     void showLoading();
 
-    void showList(int position, List<Listable> listables, Category category);
+    void showList(int position, ArrayList<Listable> listables, Category category);
 
     void hideLoading();
 

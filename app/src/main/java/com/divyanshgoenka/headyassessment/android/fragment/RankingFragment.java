@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -36,7 +35,7 @@ import butterknife.ButterKnife;
  * A fragment representing a ranking of products.
  * <p/>
  */
-public class RankingFragment extends Fragment implements RankingView, AdapterView.OnItemSelectedListener {
+public class RankingFragment extends BaseFragment implements RankingView, AdapterView.OnItemSelectedListener {
 
 
     private static final String SAVED_LAYOUT_MANAGER = "SAVED_LAYOUT_MANAGER";
