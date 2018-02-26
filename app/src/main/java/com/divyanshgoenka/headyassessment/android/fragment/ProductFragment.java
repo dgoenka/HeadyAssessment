@@ -97,6 +97,15 @@ public class ProductFragment extends BaseFragment implements ProductView, BackBu
         outState.putSerializable(ProductFragment.CATEGORY_PRODUCT_BINDINGS, categoryListableBindings);
     }
 
+    public void onViewPagerSelected(int position) {
+        mainView.setTitle(categoryListableBindings.get(position).getCategory());
+        if (position > 0) {
+            mainView.showBackButton();
+        } else {
+            mainView.hideBackButton();
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -108,21 +117,14 @@ public class ProductFragment extends BaseFragment implements ProductView, BackBu
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                currentPositon = position;
-                mainView.setTitle(categoryListableBindings.get(position).getCategory());
-                if (position > 0) {
-                    mainView.showBackButton();
-                } else {
-                    mainView.hideBackButton();
-                }
+                onViewPagerSelected(position);
             }
         });
         slowDownViewPager();
         Logger.d("savedInstanceState is " + savedInstanceState);
         if (savedInstanceState == null || savedInstanceState.getSerializable(ProductFragment.CATEGORY_PRODUCT_BINDINGS) == null) {
             Logger.d("savedInstanceState is null, loading fresh list");
-            mainPresenter.loadCategoriesAndProducts(currentPositon, mCategory);
+            mainPresenter.loadCategoriesAndProducts(0, mCategory);
         } else {
             ArrayList<CategoryListableBinding> tempCategoryListableBindings = (ArrayList<CategoryListableBinding>) savedInstanceState.getSerializable(ProductFragment.CATEGORY_PRODUCT_BINDINGS);
             Logger.d(" in onCreateView, tempCategoryListableBindings is " + tempCategoryListableBindings);
@@ -134,8 +136,9 @@ public class ProductFragment extends BaseFragment implements ProductView, BackBu
                     showList(i, tempCategoryListableBinding.getListableList(), tempCategoryListableBinding.getCategory(), false);
                     i++;
                 }
+                viewPager.setCurrentItem(currentPositon);
+                onViewPagerSelected(currentPositon);
             }
-            viewPager.setCurrentItem(currentPositon);
         }
         return view;
     }
@@ -172,25 +175,26 @@ public class ProductFragment extends BaseFragment implements ProductView, BackBu
 
     public void showList(int position, ArrayList<Listable> listables, Category category, boolean doScrollTo) {
 
-        Logger.d("In generateView, listables is " + listables);
-        for (int i = position; i < categoryListableBindings.size(); i++) {
-            categoryListableBindings.remove(i);
+        Logger.d("In generateView, position is " + position);
+        while (position < categoryListableBindings.size()) {
+            categoryListableBindings.remove(position);
         }
         categoryListableBindings.add(new CategoryListableBinding(category, listables));
         mCategory = category;
 
         View view = layoutInflater.inflate(R.layout.fragment_product_list, viewPager, false);
-        mainPagerAdapter.removeAllStarting(position, viewPager);
-        mainPagerAdapter.addView(view);
-        mainPagerAdapter.notifyDataSetChanged();
-
         ListViewHolder listViewHolder = new ListViewHolder();
         ButterKnife.bind(listViewHolder, view);
         listViewHolder.recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         listViewHolder.recyclerView.setAdapter(new ProductRankingRecyclerViewAdapter(listables, mainPresenter));
+
+        mainPagerAdapter.removeAllStarting(position, viewPager);
+        mainPagerAdapter.addView(view);
+        mainPagerAdapter.notifyDataSetChanged();
         if (doScrollTo) {
             viewPager.setCurrentItem(position, true);
         }
+        onViewPagerSelected(position);
     }
 
 
@@ -207,12 +211,12 @@ public class ProductFragment extends BaseFragment implements ProductView, BackBu
     @Override
     public void onCategoryClicked(Category category) {
         Logger.d("in ProductFragment.onCategoryClicked");
-        mainPresenter.loadCategoriesAndProducts(currentPositon + 1, category);
+        mainPresenter.loadCategoriesAndProducts(viewPager.getCurrentItem() + 1, category);
     }
 
     @Override
     public void onActivityButonClicked() {
-        viewPager.setCurrentItem(currentPositon - 1, true);
+        viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
     }
 
     public static class ListViewHolder {

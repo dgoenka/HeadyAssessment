@@ -118,9 +118,16 @@ public class MainPagerAdapter extends PagerAdapter {
     }
 
     public void removeAllStarting(int position, ViewPager viewPager) {
-        for (int i = position; i < views.size(); i++) {
-            removeView(viewPager, i);
+        if (position >= views.size()) {
+            return;
         }
+        viewPager.setAdapter(null);
+
+        while (position < views.size()) {
+            views.remove(position);
+        }
+        
+        viewPager.setAdapter(this);
         notifyDataSetChanged();
     }
 

@@ -5,7 +5,6 @@ import com.divyanshgoenka.headyassessment.di.Implementor;
 
 import java.io.IOException;
 
-import dagger.Module;
 import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -19,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by divyanshgoenka on 23/02/18.
  */
 
-@Module
+
 public class RetrofitClientProvider {
     public static HeadyService buildRetrofitClient() {
 

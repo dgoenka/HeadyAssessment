@@ -105,9 +105,9 @@ public class MainActivity extends BaseAcitivity<MainPresenter> implements MainVi
     @Override
     public void setTitle(Category category) {
         if (category == null || Validations.isEmptyOrNull(category.getName())) {
-            setTitle(R.string.app_name);
+            getSupportActionBar().setTitle(R.string.app_name);
         } else {
-            super.setTitle(category.getName());
+            getSupportActionBar().setTitle(category.getName());
         }
     }
 
